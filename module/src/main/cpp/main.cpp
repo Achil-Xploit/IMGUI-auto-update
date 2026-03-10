@@ -73,6 +73,7 @@ public:
     void onLoad(Api *api, JNIEnv *env) override { env_ = env; }
     void preAppSpecialize(AppSpecializeArgs *args) override {
         if (!args || !args->nice_name) return;
+        // enable_hack sudah ada di modmenu.h, tinggal panggil
         enable_hack = isGame(env_, args->app_data_dir);
     }
     void postAppSpecialize(const AppSpecializeArgs *) override {
