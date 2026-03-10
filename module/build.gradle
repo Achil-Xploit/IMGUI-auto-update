@@ -24,7 +24,7 @@ android {
             path file('src/main/cpp/Android.mk')
         }
     }
-    ndkVersion = '22.0.7026061'
+    ndkVersion '25.2.9519653'
 }
 
 repositories {
