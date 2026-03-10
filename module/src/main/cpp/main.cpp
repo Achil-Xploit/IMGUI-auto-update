@@ -14,9 +14,6 @@
 using zygisk::Api;
 using zygisk::AppSpecializeArgs;
 
-bool enable_hack = false;
-// targetLibName tidak perlu didefinisikan lagi karena sudah ada di modmenu.h
-
 // --- 1. IL2CPP API SUPPORT ---
 typedef void* (*il2cpp_domain_get)();
 typedef void** (*il2cpp_domain_get_assemblies)(void* domain, size_t* size);
@@ -45,39 +42,28 @@ void* get_method_auto(const char* namespaze, const char* className, const char* 
 }
 
 // --- 2. HOOK HANDLER ---
-uint8_t (*old_update)(void* instance);
-uint8_t hook_update(void* instance) {
+uint8_t (*old_Jump)(void* instance);
+uint8_t hook_Jump(void* instance) {
     if (instance != nullptr) {
-        // Logika Unlimited Jump
-        if (options.unlimited_jump) { 
-            return 0; 
-        }
-
-        // Logika ESP Box (Sekarang berada di dalam fungsi yang benar)
+        if (options.unlimited_jump) return 0;
         if (options.esp_box) {
             ESP::DrawBox(500.0f, 500.0f, 150.0f, 250.0f, options.esp_color);
         }
     }
-    return old_update(instance);
+    return old_Jump(instance);
 }
 
 // --- 3. HACK THREAD ---
 void *hack_thread(void *) {
     initModMenu((void *)drawMenu);
-
-    while (dlopen(targetLibName, RTLD_LAZY) == nullptr) {
-        sleep(1);
-    }
+    while (dlopen(targetLibName, RTLD_LAZY) == nullptr) { sleep(1); }
     sleep(5); 
 
-    // Panggil dengan 4 parameter (Namespace, Class, Method, Args)
     void* target = get_method_auto("KradGame.Logic", "CharacterLogic", "get_AirJumpCount", 0);
-    
     if (target) {
-        DobbyHook(target, (void *)hook_update, (void **)&old_update);
-        LOGI("Berhasil Hook Tanpa Offset!");
+        DobbyHook(target, (void *)hook_Jump, (void **)&old_Jump);
+        LOGI("Hook CharacterLogic Berhasil!");
     }
-    
     return nullptr;
 }
 
@@ -85,12 +71,10 @@ void *hack_thread(void *) {
 class MyModule : public zygisk::ModuleBase {
 public:
     void onLoad(Api *api, JNIEnv *env) override { env_ = env; }
-
     void preAppSpecialize(AppSpecializeArgs *args) override {
         if (!args || !args->nice_name) return;
         enable_hack = isGame(env_, args->app_data_dir);
     }
-
     void postAppSpecialize(const AppSpecializeArgs *) override {
         if (enable_hack) {
             pthread_t ntid;
