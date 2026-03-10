@@ -30,7 +30,8 @@ LOCAL_LDFLAGS += $(LOCAL_PATH)/Includes/Dobby/libdobby.a
 
 LOCAL_LDLIBS := -llog -landroid -lGLESv3 -lEGL -ldl
 
-LOCAL_CFLAGS := -Wno-error=format-security -fvisibility=hidden -fvisibility-inlines-hidden -fstack-protector-all
+LOCAL_CFLAGS := -Wno-error=format-security -Wno-format-security -fvisibility=hidden -fvisibility-inlines-hidden -fstack-protector-all
+
 LOCAL_CPPFLAGS := -std=c++17 -frtti -fexceptions
 
 include $(BUILD_SHARED_LIBRARY)
