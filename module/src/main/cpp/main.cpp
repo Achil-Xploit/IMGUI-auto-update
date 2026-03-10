@@ -14,11 +14,10 @@
 using zygisk::Api;
 using zygisk::AppSpecializeArgs;
 
-// --- VARIABEL GLOBAL ---
 bool enable_hack = false;
-#define targetLibName "libil2cpp.so"
+// targetLibName tidak perlu didefinisikan lagi karena sudah ada di modmenu.h
 
-// --- IL2CPP API SUPPORT ---
+// --- 1. IL2CPP API SUPPORT ---
 typedef void* (*il2cpp_domain_get)();
 typedef void** (*il2cpp_domain_get_assemblies)(void* domain, size_t* size);
 typedef void* (*il2cpp_assembly_get_image)(void* assembly);
@@ -45,23 +44,24 @@ void* get_method_auto(const char* namespaze, const char* className, const char* 
     return nullptr;
 }
 
-// --- HOOK HANDLER (Unlimited Jump & ESP) ---
-uint8_t (*old_Jump)(void* instance);
-uint8_t hook_Jump(void* instance) {
+// --- 2. HOOK HANDLER ---
+uint8_t (*old_update)(void* instance);
+uint8_t hook_update(void* instance) {
     if (instance != nullptr) {
         // Logika Unlimited Jump
         if (options.unlimited_jump) { 
             return 0; 
         }
-        // Logika ESP Box (Statis 500,500 untuk tes awal)
+
+        // Logika ESP Box (Sekarang berada di dalam fungsi yang benar)
         if (options.esp_box) {
             ESP::DrawBox(500.0f, 500.0f, 150.0f, 250.0f, options.esp_color);
         }
     }
-    return old_Jump(instance);
+    return old_update(instance);
 }
 
-// --- HACK THREAD ---
+// --- 3. HACK THREAD ---
 void *hack_thread(void *) {
     initModMenu((void *)drawMenu);
 
@@ -70,23 +70,27 @@ void *hack_thread(void *) {
     }
     sleep(5); 
 
-    // Target: Namespace KradGame.Logic | Class CharacterLogic | Method get_AirJumpCount
+    // Panggil dengan 4 parameter (Namespace, Class, Method, Args)
     void* target = get_method_auto("KradGame.Logic", "CharacterLogic", "get_AirJumpCount", 0);
+    
     if (target) {
-        DobbyHook(target, (void *)hook_Jump, (void **)&old_Jump);
-        LOGI("Hook CharacterLogic Berhasil!");
+        DobbyHook(target, (void *)hook_update, (void **)&old_update);
+        LOGI("Berhasil Hook Tanpa Offset!");
     }
+    
     return nullptr;
 }
 
-// --- STRUKTUR ZYGISK ---
+// --- 4. ZYGISK MODULE ---
 class MyModule : public zygisk::ModuleBase {
 public:
     void onLoad(Api *api, JNIEnv *env) override { env_ = env; }
+
     void preAppSpecialize(AppSpecializeArgs *args) override {
         if (!args || !args->nice_name) return;
         enable_hack = isGame(env_, args->app_data_dir);
     }
+
     void postAppSpecialize(const AppSpecializeArgs *) override {
         if (enable_hack) {
             pthread_t ntid;
