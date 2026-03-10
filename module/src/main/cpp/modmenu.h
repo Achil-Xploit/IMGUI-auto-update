@@ -7,14 +7,13 @@
 
 #define targetLibName OBFUSCATE("libil2cpp.so")
 
-// Nisaa samakan tipenya jadi bool
+// Nisaa ganti jadi bool biar gak berantem sama main.cpp sayang 🩷
 extern bool enable_hack; 
 
-// --- DEKLARASI SAJA (Biar tidak Redefinition) ---
 extern "C" {
     int isGame(JNIEnv *env, jstring appDataDir);
     void drawMenu();
     void initModMenu(void *drawMenu);
 }
 
-#endif // MODMENU_H
+#endif
