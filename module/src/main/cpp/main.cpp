@@ -10,6 +10,8 @@
 #include "zygisk.hpp"
 #include "Includes/Variables.h"
 #include "Includes/ESP.h" 
+#include "Includes/Logger.h" // <--- TAMBAHKAN BARIS INI, SAYANG 🩷
+
 
 bool enable_hack = false;
 
