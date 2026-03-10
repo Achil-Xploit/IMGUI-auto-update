@@ -7,7 +7,7 @@
 #include <asm-generic/mman.h>
 #include <sys/mman.h>
 
-#include "ImGui/imgui.h"
+#include "imgui.h"
 #include "Includes/Roboto-Regular.h"
 #include "ImGui/backends/imgui_impl_opengl3.h"
 #include "ImGui/backends/imgui_impl_android.h"
