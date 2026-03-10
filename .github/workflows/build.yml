@@ -9,24 +9,19 @@ jobs:
         with:
           submodules: recursive
 
-      - name: set up JDK 11
+      - name: set up JDK 17
         uses: actions/setup-java@v4
         with:
-          java-version: '11' # Gradle 4.2.2 butuh Java 11, bukan 17
+          java-version: '17'
           distribution: 'temurin'
-
-      - name: Setup NDK
-        uses: nttld/setup-ndk@v1
-        with:
-          ndk-version: r21e # Versi NDK yang paling cocok dengan Gradle 4.x
 
       - name: Build with Gradle
         run: |
           chmod +x gradlew
-          ./gradlew assembleRelease
+          ./gradlew assembleRelease --no-daemon
           
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Zygisk-Module
-          path: "**/build/outputs/**/*.zip" # Mencari file zip secara otomatis
+          name: Zygisk-Module-Release
+          path: "**/build/outputs/**/*.zip"
