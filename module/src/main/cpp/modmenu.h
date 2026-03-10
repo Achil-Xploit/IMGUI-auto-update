@@ -7,8 +7,7 @@
 
 #define targetLibName OBFUSCATE("libil2cpp.so")
 
-// --- VARIABEL GLOBAL ---
-// Pakai bool supaya pas sama main.cpp sayang
+// Nisaa sudah samakan tipenya jadi bool supaya tidak berantem sama main.cpp
 static bool enable_hack = false; 
 
 // --- DEKLARASI FUNGSI ---
