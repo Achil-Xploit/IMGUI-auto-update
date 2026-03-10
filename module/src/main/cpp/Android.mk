@@ -12,13 +12,17 @@ LOCAL_C_INCLUDES += $(LOCAL_PATH)/ImGui
 
 # --- 2. DAFTARKAN SEMUA FILE .cpp KAMU ---
 LOCAL_SRC_FILES := main.cpp \
-                   ImGui/imgui.cpp \
-                   ImGui/imgui_draw.cpp \
-                   ImGui/imgui_widgets.cpp \
-                   ImGui/imgui_tables.cpp \
-                   ImGui/imgui_demo.cpp \
-                   ImGui/imgui_impl_android.cpp \
-                   ImGui/imgui_impl_opengl3.cpp
+				   KittyMemory/KittyMemory.cpp \
+				   KittyMemory/MemoryPatch.cpp \
+				   KittyMemory/MemoryBackup.cpp \
+				   KittyMemory/KittyUtils.cpp \
+				   ImGui/backends/imgui_impl_opengl3.cpp \
+				   ImGui/backends/imgui_impl_android.cpp \
+				   ImGui/imgui.cpp \
+				   ImGui/imgui_demo.cpp \
+				   ImGui/imgui_draw.cpp \
+				   ImGui/imgui_tables.cpp \
+				   ImGui/imgui_widgets.cpp \
 
 # --- 3. TAMBAHKAN LIBRARY DOBBY ---
 # Pastikan file libdobby.a ada di folder Includes/Dobby/
