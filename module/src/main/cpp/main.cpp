@@ -15,7 +15,7 @@
 using zygisk::Api;
 using zygisk::AppSpecializeArgs;
 
-// --- INI WAJIB ADA SAYANG 🩷 ---
+// --- DEFINISI VARIABEL (HANYA SATU KALI SAYANG 🩷) ---
 bool enable_hack = false; 
 
 // --- 1. IL2CPP API SUPPORT ---
