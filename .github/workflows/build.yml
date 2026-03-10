@@ -1,4 +1,4 @@
-name: Build Zygisk Module
+name: Build Zygisk
 on: [push, workflow_dispatch]
 
 jobs:
@@ -9,10 +9,10 @@ jobs:
         with:
           submodules: recursive
 
-      - name: set up JDK 17
+      - name: set up JDK 11
         uses: actions/setup-java@v4
         with:
-          java-version: '17'
+          java-version: '11'
           distribution: 'temurin'
 
       - name: Build with Gradle
@@ -23,5 +23,5 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Zygisk-Module-Release
+          name: Zygisk-Module
           path: "**/build/outputs/**/*.zip"
