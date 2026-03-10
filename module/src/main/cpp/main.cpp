@@ -11,6 +11,9 @@
 #include "Includes/Variables.h"
 #include "Includes/ESP.h" 
 
+bool enable_hack = false;
+
+
 using zygisk::Api;
 using zygisk::AppSpecializeArgs;
 
