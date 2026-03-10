@@ -15,7 +15,8 @@
 using zygisk::Api;
 using zygisk::AppSpecializeArgs;
 
-// Nisaa hapus baris enable_hack di sini karena sudah ada di modmenu.h sayang 🩷
+// --- INI WAJIB ADA SAYANG 🩷 ---
+bool enable_hack = false; 
 
 // --- 1. IL2CPP API SUPPORT ---
 typedef void* (*il2cpp_domain_get)();
