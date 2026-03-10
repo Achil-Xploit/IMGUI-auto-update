@@ -10,14 +10,12 @@
 #include "zygisk.hpp"
 #include "Includes/Variables.h"
 #include "Includes/ESP.h" 
-#include "Includes/Logger.h" // <--- TAMBAHKAN BARIS INI, SAYANG 🩷
-
-
-bool enable_hack = false;
-
+#include "Includes/Logger.h" 
 
 using zygisk::Api;
 using zygisk::AppSpecializeArgs;
+
+// Nisaa hapus baris enable_hack di sini karena sudah ada di modmenu.h sayang 🩷
 
 // --- 1. IL2CPP API SUPPORT ---
 typedef void* (*il2cpp_domain_get)();
@@ -78,7 +76,6 @@ public:
     void onLoad(Api *api, JNIEnv *env) override { env_ = env; }
     void preAppSpecialize(AppSpecializeArgs *args) override {
         if (!args || !args->nice_name) return;
-        // enable_hack sudah ada di modmenu.h, tinggal panggil
         enable_hack = isGame(env_, args->app_data_dir);
     }
     void postAppSpecialize(const AppSpecializeArgs *) override {
