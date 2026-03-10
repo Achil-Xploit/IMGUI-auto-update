@@ -4,30 +4,21 @@
 #include <cstdio>
 #include <unistd.h>
 #include <dlfcn.h>
-#include <list>
-#include <vector>
-#include <fstream>
-#include <iostream>
-#include <fcntl.h>
 #include <dobby.h> 
-
 
 #include "modmenu.h"
 #include "zygisk.hpp"
 #include "Includes/Variables.h"
-#include "Includes/ESP.h" // Pastikan include ini ada
+#include "Includes/ESP.h" 
 
 using zygisk::Api;
 using zygisk::AppSpecializeArgs;
 
+// --- VARIABEL GLOBAL ---
 bool enable_hack = false;
+#define targetLibName "libil2cpp.so"
 
-
-// Struktur data posisi
-struct Vector3 { float x, y, z; };
-struct Vector2 { float x, y; };
-
-// --- 1. IL2CPP API SUPPORT NAMESPACE ---
+// --- IL2CPP API SUPPORT ---
 typedef void* (*il2cpp_domain_get)();
 typedef void** (*il2cpp_domain_get_assemblies)(void* domain, size_t* size);
 typedef void* (*il2cpp_assembly_get_image)(void* assembly);
@@ -35,7 +26,7 @@ typedef void* (*il2cpp_class_from_name)(void* image, const char* namespaze, cons
 typedef void* (*il2cpp_class_get_method_from_name)(void* klass, const char* name, int argsCount);
 
 void* get_method_auto(const char* namespaze, const char* className, const char* methodName, int argsCount) {
-    void* handle = dlopen("libil2cpp.so", RTLD_LAZY);
+    void* handle = dlopen(targetLibName, RTLD_LAZY);
     if (!handle) return nullptr;
 
     auto f_domain_get = (il2cpp_domain_get)dlsym(handle, "il2cpp_domain_get");
@@ -54,49 +45,41 @@ void* get_method_auto(const char* namespaze, const char* className, const char* 
     return nullptr;
 }
 
-// --- 2. HOOK HANDLER (Unlimited Jump & ESP) ---
+// --- HOOK HANDLER (Unlimited Jump & ESP) ---
 uint8_t (*old_Jump)(void* instance);
 uint8_t hook_Jump(void* instance) {
     if (instance != nullptr) {
-        // --- LOGIKA ESP ---
-        if (options.esp_box) {
-            // Ambil koordinat dunia (Contoh offset 0x30, sesuaikan dump.cs kamu)
-            Vector3 worldPos = *(Vector3*)((uintptr_t)instance + 0x30); 
-            
-            // Gambar Box mengikuti koordinat karakter
-            // Catatan: Ini masih koordinat dunia, belum WorldToScreen
-            ESP::DrawBox(worldPos.x, worldPos.y, 100.0f, 200.0f, options.esp_color);
-        }
-
-        // --- LOGIKA JUMP ---
+        // Logika Unlimited Jump
         if (options.unlimited_jump) { 
             return 0; 
+        }
+        // Logika ESP Box (Statis 500,500 untuk tes awal)
+        if (options.esp_box) {
+            ESP::DrawBox(500.0f, 500.0f, 150.0f, 250.0f, options.esp_color);
         }
     }
     return old_Jump(instance);
 }
 
-// --- 3. HACK THREAD ---
+// --- HACK THREAD ---
 void *hack_thread(void *) {
     initModMenu((void *)drawMenu);
 
-    while (dlopen("libil2cpp.so", RTLD_LAZY) == nullptr) {
+    while (dlopen(targetLibName, RTLD_LAZY) == nullptr) {
         sleep(1);
     }
     sleep(5); 
 
+    // Target: Namespace KradGame.Logic | Class CharacterLogic | Method get_AirJumpCount
     void* target = get_method_auto("KradGame.Logic", "CharacterLogic", "get_AirJumpCount", 0);
-    
     if (target) {
         DobbyHook(target, (void *)hook_Jump, (void **)&old_Jump);
         LOGI("Hook CharacterLogic Berhasil!");
-    } else {
-        LOGE("Gagal menemukan Method get_AirJumpCount!");
     }
     return nullptr;
 }
 
-// --- 4. ZYGISK MODULE ---
+// --- STRUKTUR ZYGISK ---
 class MyModule : public zygisk::ModuleBase {
 public:
     void onLoad(Api *api, JNIEnv *env) override { env_ = env; }
