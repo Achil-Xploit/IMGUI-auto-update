@@ -10,6 +10,7 @@
 #include <iostream>
 #include <fcntl.h>
 #include <dobby.h> 
+#include "Includes/Dobby/dobby.h"
 
 #include "modmenu.h"
 #include "zygisk.hpp"
